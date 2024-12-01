@@ -1,0 +1,45 @@
+import java.io.*;
+import java.net.*;
+
+public class CalculatorServer {
+    public static void main(String[] args) {
+        try (ServerSocket serverSocket = new ServerSocket(12345)) {
+            System.out.println("Сервер запущен...");
+            while (true) {
+                try (Socket clientSocket = serverSocket.accept();
+                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                     PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
+
+                    out.println("Доступные операции: +, -, *, /");
+                    String input = in.readLine();
+                    String[] parts = input.split(" ");
+                    double num1 = Double.parseDouble(parts[0]);
+                    double num2 = Double.parseDouble(parts[1]);
+                    String operation = parts[2];
+
+                    double result;
+                    switch (operation) {
+                        case "+":
+                            result = num1 + num2;
+                            break;
+                        case "-":
+                            result = num1 - num2;
+                            break;
+                        case "*":
+                            result = num1 * num2;
+                            break;
+                        case "/":
+                            result = num1 / num2;
+                            break;
+                        default:
+                            out.println("Неверная операция");
+                            continue;
+                    }
+                    out.println("Результат: " + result);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
